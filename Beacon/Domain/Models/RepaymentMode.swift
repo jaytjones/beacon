@@ -7,3 +7,7 @@
 
 import Foundation
 
+enum RepaymentMode: String, CaseIterable, Equatable {
+    case byMonths      = "By months"
+    case byPayment     = "By payment amount"
+}
