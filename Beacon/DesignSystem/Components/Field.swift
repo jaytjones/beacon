@@ -12,6 +12,10 @@
 //    - Inline error rendering (icon + text — color is never the sole signal)
 //    - Tabular-digit font option for numeric inputs (per usage-guide rule #2)
 //
+//  The error parameter is `String?`, not the domain `FieldError?` — the design
+//  system stays decoupled from domain types. Call sites pass through the
+//  ViewModel's `error(for:)` accessor which returns the formatted message.
+//
 //  Border-width exception: the 1.5px focus/error width is a usage-site literal,
 //  documented in the Beacon Design System Usage Guide as an explicit narrow
 //  special case (no token).
@@ -32,8 +36,8 @@ struct Field: View {
     var textContentType: UITextContentType? = nil
     var isMonospacedDigit: Bool = false
 
-    /// Inline error to render under the field. Pass nil for the default state.
-    var error: FieldError? = nil
+    /// Inline error message to render under the field. Pass nil for the default state.
+    var error: String? = nil
 
     // MARK: - State
 
@@ -73,12 +77,12 @@ struct Field: View {
                 HStack(alignment: .firstTextBaseline, spacing: BeaconSpacing.sm) {
                     Image(systemName: "exclamationmark.circle.fill")
                         .accessibilityHidden(true)
-                    Text(error.message)
+                    Text(error)
                 }
                 .font(.beaconAlert)
                 .foregroundStyle(Color.beaconAttentionText)
                 .accessibilityElement(children: .combine)
-                .accessibilityLabel("\(label) error: \(error.message)")
+                .accessibilityLabel("\(label) error: \(error)")
             }
         }
     }
@@ -120,7 +124,7 @@ struct Field: View {
             text: .constant(""),
             keyboardType: .decimalPad,
             isMonospacedDigit: true,
-            error: FieldError(field: .balance, message: "Please enter a balance greater than $0")
+            error: "Please enter a balance greater than $0"
         )
     }
     .padding(BeaconSpacing.lg)
