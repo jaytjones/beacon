@@ -113,7 +113,15 @@ final class BeaconViewModel: ObservableObject {
         // Synchronous calculation — PRD requires <1s. If this ever moves
         // off the main actor, swap in a Task.detached and await the result.
         let result = AmortizationCalculator.calculate(input: input)
-        plan = result
+
+        guard !result.rows.isEmpty else {
+            // Calculator returned empty — surface a generic alert rather than
+            // updating plan with a zero-row result.
+            self.alertType = .termExceedsMax
+            return
+        }
+
+        self.plan = result
         hasStaleResults = false
         isCalculating = false
     }

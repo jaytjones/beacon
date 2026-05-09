@@ -131,6 +131,15 @@ struct InputValidator {
                             firstMonthInterest + 1, scale: 2
                         )
                         alert = .insufficientPayment(minimum: minimum)
+                    }else {
+                        // Payment covers first-month interest — now check full term
+                        alert = byPaymentTermAlert(
+                            balance: balance,
+                            apr: apr,
+                            payment: payment,
+                            startMonth: raw.startMonth,
+                            startYear: raw.startYear
+                        )
                     }
                 }
 
@@ -251,5 +260,48 @@ struct InputValidator {
             field: .months,
             message: "At this APR, your balance won't be paid off in this many months. Try a longer term."
         )
+        
+    }
+    /// Projects whether a byPayment plan would exceed 360 months.
+    /// Catches cases where payment covers first-month interest but fails
+    /// in longer months (e.g. 31-day months at high APRs), causing the
+    /// calculator to loop until its safety valve and return an empty plan.
+    private static func byPaymentTermAlert(
+        balance: Decimal,
+        apr: Decimal,
+        payment: Decimal,
+        startMonth: Int,
+        startYear: Int
+    ) -> AlertType? {
+        let dailyRate = apr / 100 / 365
+        var currentBalance = balance
+        var monthNumber = 0
+        var date = AmortizationCalculator.firstOfMonth(month: startMonth, year: startYear)
+        let calendar = Calendar.current
+
+        while currentBalance > 0 {
+            monthNumber += 1
+            if monthNumber > AmortizationCalculator.maxMonths {
+                return .termExceedsMax
+            }
+
+            let days = AmortizationCalculator.daysInMonth(date)
+            let interest = AmortizationCalculator.round(
+                dailyRate * Decimal(days) * currentBalance, scale: 2
+            )
+            let principal = payment - interest
+
+            // Payment no longer covers interest in this month — balance will
+            // never reach zero (catches high-APR cases that slip past the
+            // first-month check when later months have more days)
+            if principal <= 0 {
+                return .termExceedsMax
+            }
+
+            currentBalance -= principal
+            date = calendar.date(byAdding: .month, value: 1, to: date) ?? date
+        }
+
+        return nil
     }
 }
