@@ -132,11 +132,11 @@ struct PayoffChartView: View {
         }
 
         // Only select if the tap is reasonably close (within ~1 month tolerance)
-        if let nearest = nearest,
-           abs(nearest.date.timeIntervalSince(date)) < (30.0 * 24 * 60 * 60) {
+        // Simpler: always select the nearest row, no tolerance gate
+        if let nearest = rows.min(by: {
+            abs($0.date.timeIntervalSince(date)) < abs($1.date.timeIntervalSince(date))
+        }) {
             selectedRow = nearest
-        } else {
-            selectedRow = nil
         }
     }
 
