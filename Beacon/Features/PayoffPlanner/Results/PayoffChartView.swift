@@ -22,6 +22,7 @@
 
 import SwiftUI
 import Charts
+import Accessibility
 
 struct PayoffChartView: View {
 
@@ -96,6 +97,8 @@ struct PayoffChartView: View {
         .animation(BeaconMotion.subtleChange, value: selectedRow?.id)
         .frame(height: 200)
         .padding(.vertical, BeaconSpacing.md)
+        .accessibilityLabel(chartSummaryLabel)
+        .accessibilityChartDescriptor(PayoffChartDescriptor(rows: rows))
     }
 
     // MARK: - Tap handling
@@ -119,6 +122,68 @@ struct PayoffChartView: View {
         if count <= 12 { return count }
         if count <= 60 { return 6 }
         return 4
+    }
+
+    // MARK: - Accessibility
+
+    private var chartSummaryLabel: String {
+        guard let first = rows.first else { return "Balance over time" }
+        let startBalance = first.remainingBalance + first.principalPaid
+        let formatted = startBalance.formatted(.currency(code: "USD"))
+        return "Balance over time chart. \(rows.count) months. Starting balance \(formatted)."
+    }
+}
+
+// MARK: - AXChartDescriptorRepresentable
+
+private struct PayoffChartDescriptor: AXChartDescriptorRepresentable {
+
+    let rows: [AmortizationRow]
+
+    func makeChartDescriptor() -> AXChartDescriptor {
+        let dateLabels = rows.map { $0.date.formatted(.dateTime.month(.abbreviated).year()) }
+
+        let xAxis = AXCategoricalDataAxisDescriptor(
+            title: "Month",
+            categoryOrder: dateLabels
+        )
+
+        let startBalance = rows.first.map {
+            NSDecimalNumber(decimal: $0.remainingBalance + $0.principalPaid).doubleValue
+        } ?? 0
+        let yAxis = AXNumericDataAxisDescriptor(
+            title: "Remaining balance",
+            range: 0...max(startBalance, 1),
+            gridlinePositions: []
+        ) { value in
+            value.formatted(.currency(code: "USD"))
+        }
+
+        let dataPoints = zip(dateLabels, rows).map { label, row in
+            AXDataPoint(
+                x: label,
+                y: NSDecimalNumber(decimal: row.remainingBalance).doubleValue
+            )
+        }
+
+        let series = AXDataSeriesDescriptor(
+            name: "Remaining balance",
+            isContinuous: true,
+            dataPoints: dataPoints
+        )
+
+        let startFormatted = (rows.first.map { $0.remainingBalance + $0.principalPaid } ?? 0)
+            .formatted(.currency(code: "USD"))
+        let summary = "Balance decreases from \(startFormatted) to $0 over \(rows.count) months."
+
+        return AXChartDescriptor(
+            title: "Balance over time",
+            summary: summary,
+            xAxis: xAxis,
+            yAxis: yAxis,
+            additionalAxes: [],
+            series: [series]
+        )
     }
 }
 

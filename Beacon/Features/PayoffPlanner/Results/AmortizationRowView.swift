@@ -30,11 +30,24 @@ struct AmortizationRowView: View {
     var isAlternate: Bool = false
     var isFinalRow: Bool = false
 
+    @Environment(\.dynamicTypeSize) private var typeSize
+    @ScaledMetric private var scaledDateWidth: CGFloat = 76
+
     var body: some View {
+        if typeSize.isAccessibilitySize {
+            accessibilityBody
+        } else {
+            standardBody
+        }
+    }
+
+    // MARK: - Layouts
+
+    private var standardBody: some View {
         HStack(spacing: AmortizationTableMetrics.columnGap) {
             Text(displayDate)
                 .lineLimit(1)
-                .frame(width: AmortizationTableMetrics.dateColumnWidth, alignment: .leading)
+                .frame(width: scaledDateWidth, alignment: .leading)
 
             currencyCell(row.payment)
             currencyCell(row.interestPaid)
@@ -50,6 +63,29 @@ struct AmortizationRowView: View {
         .accessibilityLabel(accessibilityLabel)
     }
 
+    private var accessibilityBody: some View {
+        VStack(alignment: .leading, spacing: BeaconSpacing.xs) {
+            Text("Month \(row.monthNumber) — \(displayDate)")
+                .font(.beaconFieldLabel)
+                .foregroundStyle(Color.beaconTextPrimary)
+            HStack {
+                labeledAmount("Payment", row.payment)
+                Spacer()
+                labeledAmount("Interest", row.interestPaid)
+            }
+            HStack {
+                labeledAmount("Principal", row.principalPaid)
+                Spacer()
+                labeledAmount("Balance", row.remainingBalance)
+            }
+        }
+        .padding(.vertical, BeaconSpacing.md)
+        .padding(.horizontal, AmortizationTableMetrics.rowHorizontalPadding)
+        .background(rowBackground)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(accessibilityLabel)
+    }
+
     // MARK: - Cells
 
     private func currencyCell(_ amount: Decimal) -> some View {
@@ -57,6 +93,17 @@ struct AmortizationRowView: View {
             .lineLimit(1)
             .minimumScaleFactor(0.7)
             .frame(maxWidth: .infinity, alignment: .trailing)
+    }
+
+    private func labeledAmount(_ label: String, _ amount: Decimal) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(label)
+                .font(.beaconCaption)
+                .foregroundStyle(Color.beaconTextSecondary)
+            Text(amount.formatted(.currency(code: "USD")))
+                .font(.beaconTableCell)
+                .foregroundStyle(Color.beaconTextPrimary)
+        }
     }
 
     // MARK: - Derived state

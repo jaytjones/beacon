@@ -20,10 +20,12 @@
 //
 
 import SwiftUI
+import Accessibility
 
 struct BeaconRootView: View {
 
     @StateObject private var viewModel = BeaconViewModel()
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         ScrollView {
@@ -42,13 +44,13 @@ struct BeaconRootView: View {
                     StaleResultsNotice()
                         .padding(.horizontal, BeaconLayout.screenMargin)
                         .transition(.opacity)
-                        .animation(BeaconMotion.appearance, value: viewModel.hasStaleResults)
+                        .animation(reduceMotion ? nil : BeaconMotion.appearance, value: viewModel.hasStaleResults)
                 }
 
                 if let plan = viewModel.plan {
                     ResultsView(plan: plan)
                         .transition(.opacity)
-                        .animation(BeaconMotion.appearance, value: viewModel.plan != nil)
+                        .animation(reduceMotion ? nil : BeaconMotion.appearance, value: viewModel.plan != nil)
                 }
 
                 DisclaimerFooter()
@@ -60,6 +62,15 @@ struct BeaconRootView: View {
         }
         .scrollDismissesKeyboard(.interactively)
         .background(Color.beaconBackground)
+        .onChange(of: viewModel.plan?.payoffDate) { _, _ in
+            guard let plan = viewModel.plan else { return }
+            let months = plan.rows.count
+            let interest = plan.totalInterestPaid.formatted(.currency(code: "USD"))
+            let payoff = plan.payoffDate.formatted(.dateTime.month(.wide).year())
+            AccessibilityNotification.Announcement(
+                "Payoff plan ready. \(months) months. Total interest \(interest). Payoff date \(payoff)."
+            ).post()
+        }
     }
 }
 

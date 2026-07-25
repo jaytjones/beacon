@@ -25,9 +25,14 @@ struct AmortizationTableView: View {
 
     let rows: [AmortizationRow]
 
+    @Environment(\.dynamicTypeSize) private var typeSize
+    @ScaledMetric private var scaledDateWidth: CGFloat = 76
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            header
+            if !typeSize.isAccessibilitySize {
+                header
+            }
             LazyVStack(spacing: 0) {
                 ForEach(Array(rows.enumerated()), id: \.element.id) { index, row in
                     AmortizationRowView(
@@ -45,7 +50,7 @@ struct AmortizationTableView: View {
     private var header: some View {
         HStack(spacing: AmortizationTableMetrics.columnGap) {
             headerLabel("Date")
-                .frame(width: AmortizationTableMetrics.dateColumnWidth, alignment: .leading)
+                .frame(width: scaledDateWidth, alignment: .leading)
             headerLabel("Payment")
                 .frame(maxWidth: .infinity, alignment: .trailing)
             headerLabel("Interest")
