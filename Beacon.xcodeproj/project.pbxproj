@@ -15,6 +15,7 @@
 		86687D0C3015470E00E05A84 /* beacon-prd.md in Resources */ = {isa = PBXBuildFile; fileRef = 86687CFF3015470E00E05A84 /* beacon-prd.md */; };
 		86687D0D3015470E00E05A84 /* beacon-results-from-phase-3.md in Resources */ = {isa = PBXBuildFile; fileRef = 86687D023015470E00E05A84 /* beacon-results-from-phase-3.md */; };
 		86687D0E3015470E00E05A84 /* beacon-results-from-phase-4.md in Resources */ = {isa = PBXBuildFile; fileRef = 86687D033015470E00E05A84 /* beacon-results-from-phase-4.md */; };
+		86687D133015522100E05A84 /* session-summary-2026-07-25.md in Resources */ = {isa = PBXBuildFile; fileRef = 86687D123015522100E05A84 /* session-summary-2026-07-25.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -43,6 +44,7 @@
 		86687D033015470E00E05A84 /* beacon-results-from-phase-4.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "beacon-results-from-phase-4.md"; sourceTree = "<group>"; };
 		86687D043015470E00E05A84 /* beacon-tech-spec.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "beacon-tech-spec.md"; sourceTree = "<group>"; };
 		86687D053015470E00E05A84 /* beacon-usage-guide.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "beacon-usage-guide.md"; sourceTree = "<group>"; };
+		86687D123015522100E05A84 /* session-summary-2026-07-25.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "session-summary-2026-07-25.md"; sourceTree = "<group>"; };
 		86B7F18A2FA6BADE0012F80F /* Beacon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Beacon.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		86B7F19B2FA6BADF0012F80F /* BeaconTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BeaconTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		86B7F1A52FA6BADF0012F80F /* BeaconUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BeaconUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -115,6 +117,7 @@
 				86687D033015470E00E05A84 /* beacon-results-from-phase-4.md */,
 				86687D043015470E00E05A84 /* beacon-tech-spec.md */,
 				86687D053015470E00E05A84 /* beacon-usage-guide.md */,
+				86687D123015522100E05A84 /* session-summary-2026-07-25.md */,
 			);
 			path = Docs;
 			sourceTree = "<group>";
@@ -267,6 +270,7 @@
 				86687D0B3015470E00E05A84 /* beacon-results-from-phase-2.md in Resources */,
 				86687D0C3015470E00E05A84 /* beacon-prd.md in Resources */,
 				86687D0D3015470E00E05A84 /* beacon-results-from-phase-3.md in Resources */,
+				86687D133015522100E05A84 /* session-summary-2026-07-25.md in Resources */,
 				86687D0E3015470E00E05A84 /* beacon-results-from-phase-4.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
