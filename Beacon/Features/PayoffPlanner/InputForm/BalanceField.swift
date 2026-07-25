@@ -17,7 +17,8 @@ struct BalanceField: View {
             text: $viewModel.balanceText,
             keyboardType: .decimalPad,
             isMonospacedDigit: true,
-            error: viewModel.error(for: .balance)
+            error: viewModel.error(for: .balance),
+            onFocusLost: { viewModel.markTouched(.balance) }
         )
     }
 }

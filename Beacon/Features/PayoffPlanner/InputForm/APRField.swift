@@ -19,7 +19,8 @@ struct APRField: View {
             text: $viewModel.aprText,
             keyboardType: .decimalPad,
             isMonospacedDigit: true,
-            error: viewModel.error(for: .apr)
+            error: viewModel.error(for: .apr),
+            onFocusLost: { viewModel.markTouched(.apr) }
         )
     }
 }

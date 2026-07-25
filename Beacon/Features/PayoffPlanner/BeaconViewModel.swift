@@ -18,8 +18,10 @@ import Combine
 ///
 /// State categories:
 ///   - **Form inputs**: raw `String` properties bound to `TextField`s.
-///   - **Computation state**: `plan`, `isCalculating`, `hasStaleResults`.
+///   - **Computation state**: `plan`, `hasStaleResults`.
 ///   - **Validation**: `fieldErrors` and `alertType`, recomputed reactively.
+///   - **Touch tracking**: `touchedFields` and `hasAttemptedCalculation`
+///     gate visual error rendering so errors only appear on visited fields.
 ///
 /// Validation strategy (tech spec §4.2):
 ///   - Format errors (non-numeric) refresh as the user edits.
@@ -44,11 +46,6 @@ final class BeaconViewModel: ObservableObject {
     /// nil until the first successful calculation.
     @Published private(set) var plan: PayoffPlan? = nil
 
-    /// True while the calculation is running. PRD requires under 1 second
-    /// for any term up to 360 months, so this is brief — primarily a
-    /// signal for the spinner on the Calculate button.
-    @Published private(set) var isCalculating: Bool = false
-
     /// True when inputs have been edited after a successful calculation.
     /// Drives `StaleResultsNotice` visibility (tech spec §3.2).
     @Published private(set) var hasStaleResults: Bool = false
@@ -58,6 +55,16 @@ final class BeaconViewModel: ObservableObject {
     @Published private(set) var fieldErrors: [FieldError] = []
     @Published private(set) var alertType: AlertType? = nil
 
+    // MARK: - Touch tracking
+
+    /// Fields the user has interacted with (lost focus at least once).
+    /// Errors render only for touched fields or after Calculate is first pressed.
+    @Published private(set) var touchedFields: Set<InputField> = []
+
+    /// True once the user has tapped Calculate. After this, all field errors
+    /// are visible regardless of individual touch state.
+    private(set) var hasAttemptedCalculation: Bool = false
+
     // MARK: - Derived
 
     var canCalculate: Bool {
@@ -65,7 +72,6 @@ final class BeaconViewModel: ObservableObject {
     }
 
     var showResults: Bool { plan != nil }
-    var showRecalculateBar: Bool { plan != nil }
 
     /// Cheap presence check — does NOT validate format or range. Used as a
     /// guard before validation runs at all. Mirrors the logic of "the
@@ -84,14 +90,21 @@ final class BeaconViewModel: ObservableObject {
 
     // MARK: - Lookup helpers for views
 
-    /// Pull the inline error message for a specific field, if any. Views
-    /// use this to render `Text(viewModel.error(for: .balance))` below the
-    /// corresponding input.
+    /// Pull the inline error message for a specific field, if any.
+    /// Returns nil until the field has been touched or Calculate has been pressed,
+    /// so errors never appear on fields the user hasn't visited yet.
     func error(for field: InputField) -> String? {
-        fieldErrors.first(where: { $0.field == field })?.message
+        guard hasAttemptedCalculation || touchedFields.contains(field) else { return nil }
+        return fieldErrors.first(where: { $0.field == field })?.message
     }
 
     // MARK: - Public actions
+
+    /// Record that a field has lost focus. Called from each field's `onFocusLost`
+    /// callback. Enables error display for that field going forward.
+    func markTouched(_ field: InputField) {
+        touchedFields.insert(field)
+    }
 
     /// Run validation against current form state. Called reactively as the
     /// user edits, and also explicitly when the user taps Calculate.
@@ -104,37 +117,32 @@ final class BeaconViewModel: ObservableObject {
 
     /// Run the calculator and update `plan`. No-op if validation fails.
     func calculate() {
+        hasAttemptedCalculation = true
         revalidate()
         guard canCalculate, let input = InputValidator.buildInput(from: currentRawInputs()) else {
             return
         }
 
-        isCalculating = true
-        // Synchronous calculation — PRD requires <1s. If this ever moves
-        // off the main actor, swap in a Task.detached and await the result.
         let result = AmortizationCalculator.calculate(input: input)
-
-        guard !result.rows.isEmpty else {
-            // Calculator returned empty — surface a generic alert rather than
-            // updating plan with a zero-row result.
-            self.alertType = .termExceedsMax
-            return
-        }
+        // Validator catches all paths that produce an empty plan; treat this
+        // as an invariant violation and bail without surfacing a confusing alert.
+        guard !result.rows.isEmpty else { return }
 
         self.plan = result
         hasStaleResults = false
-        isCalculating = false
     }
 
     /// Switch repayment mode mid-entry. Per PRD Feature 1 + tech spec §6.1,
-    /// the inactive field's value and any validation error on it are cleared.
+    /// the inactive field's value and touch state are cleared.
     func switchMode(to newMode: RepaymentMode) {
         guard newMode != repaymentMode else { return }
         switch newMode {
         case .byMonths:
             monthlyPaymentText = ""
+            touchedFields.remove(.monthlyPayment)
         case .byPayment:
             monthsText = ""
+            touchedFields.remove(.months)
         }
         repaymentMode = newMode
         revalidate()
@@ -152,8 +160,6 @@ final class BeaconViewModel: ObservableObject {
     /// the start date triggers a revalidation; any change to a form field
     /// after a successful calculation also flips `hasStaleResults` true.
     private func setupBindings() {
-        // Validate reactively. Combining all fields and debouncing slightly
-        // avoids running the validator on every keystroke during fast typing.
         let formChanges = Publishers.MergeMany(
             $balanceText.map { _ in () }.eraseToAnyPublisher(),
             $aprText.map { _ in () }.eraseToAnyPublisher(),
@@ -165,7 +171,7 @@ final class BeaconViewModel: ObservableObject {
         )
 
         formChanges
-            .dropFirst()  // skip the synchronous initial values
+            .dropFirst()
             .debounce(for: .milliseconds(50), scheduler: DispatchQueue.main)
             .sink { [weak self] in
                 self?.revalidate()

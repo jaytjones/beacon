@@ -18,7 +18,8 @@ struct MonthsField: View {
             text: $viewModel.monthsText,
             keyboardType: .numberPad,
             isMonospacedDigit: true,
-            error: viewModel.error(for: .months)
+            error: viewModel.error(for: .months),
+            onFocusLost: { viewModel.markTouched(.months) }
         )
     }
 }

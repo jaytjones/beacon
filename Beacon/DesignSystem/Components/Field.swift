@@ -11,6 +11,8 @@
 //    - 0.5px hairline border (1.5px sage on focus, 1.5px amber on error)
 //    - Inline error rendering (icon + text — color is never the sole signal)
 //    - Tabular-digit font option for numeric inputs (per usage-guide rule #2)
+//    - onFocusLost callback — fired when the field loses focus, used by callers
+//      to mark the field as touched for deferred error display
 //
 //  The error parameter is `String?`, not the domain `FieldError?` — the design
 //  system stays decoupled from domain types. Call sites pass through the
@@ -38,6 +40,9 @@ struct Field: View {
 
     /// Inline error message to render under the field. Pass nil for the default state.
     var error: String? = nil
+
+    /// Called when the field loses focus. Use to mark the field as touched.
+    var onFocusLost: (() -> Void)? = nil
 
     // MARK: - State
 
@@ -72,6 +77,9 @@ struct Field: View {
                 )
                 .accessibilityLabel(label)
                 .accessibilityValue(text.isEmpty ? "Empty" : text)
+                .onChange(of: isFocused) { _, newValue in
+                    if !newValue { onFocusLost?() }
+                }
 
             if let error {
                 HStack(alignment: .firstTextBaseline, spacing: BeaconSpacing.sm) {

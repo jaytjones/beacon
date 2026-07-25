@@ -6,6 +6,17 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		86687D073015470E00E05A84 /* beacon-tech-spec.md in Resources */ = {isa = PBXBuildFile; fileRef = 86687D043015470E00E05A84 /* beacon-tech-spec.md */; };
+		86687D083015470E00E05A84 /* beacon-usage-guide.md in Resources */ = {isa = PBXBuildFile; fileRef = 86687D053015470E00E05A84 /* beacon-usage-guide.md */; };
+		86687D093015470E00E05A84 /* 20260724 Next Steps.md in Resources */ = {isa = PBXBuildFile; fileRef = 86687CFE3015470E00E05A84 /* 20260724 Next Steps.md */; };
+		86687D0A3015470E00E05A84 /* beacon-results-from-phase-1.md in Resources */ = {isa = PBXBuildFile; fileRef = 86687D003015470E00E05A84 /* beacon-results-from-phase-1.md */; };
+		86687D0B3015470E00E05A84 /* beacon-results-from-phase-2.md in Resources */ = {isa = PBXBuildFile; fileRef = 86687D013015470E00E05A84 /* beacon-results-from-phase-2.md */; };
+		86687D0C3015470E00E05A84 /* beacon-prd.md in Resources */ = {isa = PBXBuildFile; fileRef = 86687CFF3015470E00E05A84 /* beacon-prd.md */; };
+		86687D0D3015470E00E05A84 /* beacon-results-from-phase-3.md in Resources */ = {isa = PBXBuildFile; fileRef = 86687D023015470E00E05A84 /* beacon-results-from-phase-3.md */; };
+		86687D0E3015470E00E05A84 /* beacon-results-from-phase-4.md in Resources */ = {isa = PBXBuildFile; fileRef = 86687D033015470E00E05A84 /* beacon-results-from-phase-4.md */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		86B7F19C2FA6BADF0012F80F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -24,6 +35,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		86687CFE3015470E00E05A84 /* 20260724 Next Steps.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "20260724 Next Steps.md"; sourceTree = "<group>"; };
+		86687CFF3015470E00E05A84 /* beacon-prd.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "beacon-prd.md"; sourceTree = "<group>"; };
+		86687D003015470E00E05A84 /* beacon-results-from-phase-1.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "beacon-results-from-phase-1.md"; sourceTree = "<group>"; };
+		86687D013015470E00E05A84 /* beacon-results-from-phase-2.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "beacon-results-from-phase-2.md"; sourceTree = "<group>"; };
+		86687D023015470E00E05A84 /* beacon-results-from-phase-3.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "beacon-results-from-phase-3.md"; sourceTree = "<group>"; };
+		86687D033015470E00E05A84 /* beacon-results-from-phase-4.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "beacon-results-from-phase-4.md"; sourceTree = "<group>"; };
+		86687D043015470E00E05A84 /* beacon-tech-spec.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "beacon-tech-spec.md"; sourceTree = "<group>"; };
+		86687D053015470E00E05A84 /* beacon-usage-guide.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "beacon-usage-guide.md"; sourceTree = "<group>"; };
 		86B7F18A2FA6BADE0012F80F /* Beacon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Beacon.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		86B7F19B2FA6BADF0012F80F /* BeaconTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BeaconTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		86B7F1A52FA6BADF0012F80F /* BeaconUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BeaconUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -85,9 +104,25 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		86687D063015470E00E05A84 /* Docs */ = {
+			isa = PBXGroup;
+			children = (
+				86687CFE3015470E00E05A84 /* 20260724 Next Steps.md */,
+				86687CFF3015470E00E05A84 /* beacon-prd.md */,
+				86687D003015470E00E05A84 /* beacon-results-from-phase-1.md */,
+				86687D013015470E00E05A84 /* beacon-results-from-phase-2.md */,
+				86687D023015470E00E05A84 /* beacon-results-from-phase-3.md */,
+				86687D033015470E00E05A84 /* beacon-results-from-phase-4.md */,
+				86687D043015470E00E05A84 /* beacon-tech-spec.md */,
+				86687D053015470E00E05A84 /* beacon-usage-guide.md */,
+			);
+			path = Docs;
+			sourceTree = "<group>";
+		};
 		86B7F1812FA6BADE0012F80F = {
 			isa = PBXGroup;
 			children = (
+				86687D063015470E00E05A84 /* Docs */,
 				86B7F18C2FA6BADE0012F80F /* Beacon */,
 				86B7F19E2FA6BADF0012F80F /* BeaconTests */,
 				86B7F1A82FA6BADF0012F80F /* BeaconUITests */,
@@ -225,6 +260,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				86687D073015470E00E05A84 /* beacon-tech-spec.md in Resources */,
+				86687D083015470E00E05A84 /* beacon-usage-guide.md in Resources */,
+				86687D093015470E00E05A84 /* 20260724 Next Steps.md in Resources */,
+				86687D0A3015470E00E05A84 /* beacon-results-from-phase-1.md in Resources */,
+				86687D0B3015470E00E05A84 /* beacon-results-from-phase-2.md in Resources */,
+				86687D0C3015470E00E05A84 /* beacon-prd.md in Resources */,
+				86687D0D3015470E00E05A84 /* beacon-results-from-phase-3.md in Resources */,
+				86687D0E3015470E00E05A84 /* beacon-results-from-phase-4.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -299,7 +342,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -334,7 +377,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -481,7 +524,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 2XT4CUP82M;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jaytjones.BeaconTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -503,7 +546,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 2XT4CUP82M;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jaytjones.BeaconTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -524,6 +567,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 2XT4CUP82M;
 				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jaytjones.BeaconUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -544,6 +588,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 2XT4CUP82M;
 				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jaytjones.BeaconUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";

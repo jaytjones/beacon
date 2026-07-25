@@ -18,7 +18,7 @@ struct DisclaimerFooter: View {
     var body: some View {
         Text(Self.text)
             .font(.beaconCaption)
-            .foregroundStyle(Color.beaconTextTertiary)
+            .foregroundStyle(Color.beaconTextSecondary)
             .multilineTextAlignment(.center)
             .frame(maxWidth: .infinity)
             .accessibilityLabel(Self.text)

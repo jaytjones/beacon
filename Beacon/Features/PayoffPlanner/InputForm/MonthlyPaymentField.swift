@@ -17,7 +17,8 @@ struct MonthlyPaymentField: View {
             text: $viewModel.monthlyPaymentText,
             keyboardType: .decimalPad,
             isMonospacedDigit: true,
-            error: viewModel.error(for: .monthlyPayment)
+            error: viewModel.error(for: .monthlyPayment),
+            onFocusLost: { viewModel.markTouched(.monthlyPayment) }
         )
     }
 }

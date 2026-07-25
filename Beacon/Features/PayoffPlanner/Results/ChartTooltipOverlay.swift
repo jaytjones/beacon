@@ -2,19 +2,11 @@
 //  ChartTooltipOverlay.swift
 //  Beacon
 //
-//  Custom tooltip overlay rendered when a user taps a data point in
-//  PayoffChartView. Shows the month, year, and remaining balance at that
-//  point.
+//  Custom tooltip rendered as a floating overlay when a user taps a data
+//  point in PayoffChartView. Shows the month, year, and remaining balance.
 //
-//  Design decisions:
-//    - Uses InlineNotice-style chrome (rounded rect, subtle shadow, no color tint)
-//    - Positioned near the top of the chart for maximum visibility
-//    - Font and color tokens match the InlineNotice pattern
-//    - No interaction — tap elsewhere on the chart to dismiss (handled by parent)
-//
-//  Phase 3 note: positioning logic could be enhanced to track the tapped
-//  point's coordinate and position the tooltip closer to it. For v1, a
-//  fixed top-center position is sufficient and keeps the code simpler.
+//  Positioned via .overlay(alignment: .top) on the Chart in PayoffChartView
+//  so it floats without displacing layout.
 //
 
 import SwiftUI
@@ -26,13 +18,11 @@ struct ChartTooltipOverlay: View {
     var body: some View {
         VStack(alignment: .center, spacing: BeaconSpacing.sm) {
 
-            // Month and year
-            Text(monthYearText(selectedRow.date))
+            Text(BeaconFormatters.monthYearLong(selectedRow.date))
                 .font(.beaconBodyMono)
                 .foregroundStyle(Color.beaconTextPrimary)
 
-            // Remaining balance
-            Text(balanceText(selectedRow.remainingBalance))
+            Text(BeaconFormatters.currency(selectedRow.remainingBalance))
                 .font(.beaconBodyMono)
                 .foregroundStyle(Color.beaconTextSecondary)
         }
@@ -47,22 +37,6 @@ struct ChartTooltipOverlay: View {
         .shadow(color: Color.black.opacity(0.08), radius: 4, x: 0, y: 2)
         .padding(.horizontal, BeaconSpacing.lg)
         .transition(.opacity.combined(with: .move(edge: .top)))
-    }
-
-    // MARK: - Formatting
-
-    private func monthYearText(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM yyyy"  // "January 2026"
-        return formatter.string(from: date)
-    }
-
-    private func balanceText(_ balance: Decimal) -> String {
-        let doubleValue = NSDecimalNumber(decimal: balance).doubleValue
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencyCode = "USD"
-        return formatter.string(from: NSNumber(value: doubleValue)) ?? "$0.00"
     }
 }
 

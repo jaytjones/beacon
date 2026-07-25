@@ -3,7 +3,7 @@
 //  Beacon
 //
 //  Wraps PrimaryButton, wired to the ViewModel's calculate flow.
-//  Disabled when !canCalculate; shows spinner while isCalculating.
+//  Disabled when !canCalculate.
 //
 
 import SwiftUI
@@ -14,7 +14,6 @@ struct CalculateButton: View {
     var body: some View {
         PrimaryButton(
             title: "Calculate",
-            isLoading: viewModel.isCalculating,
             isEnabled: viewModel.canCalculate,
             action: { viewModel.calculate() }
         )
