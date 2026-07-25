@@ -1,8 +1,8 @@
 # Session Summary — 25 July 2026
 
 **Source document:** `Docs/20260724 Next Steps.md`
-**Commits this session:** `afc2825`, `a01d90c`, `19733e4`
-**Build status:** ✅ Clean build, all targets compiling
+**Commits this session:** `afc2825`, `a01d90c`, `19733e4`, `7c19f53`, `22fce2a`
+**Build status:** ✅ Clean build, all targets compiling, 101/101 tests passing
 
 ---
 
@@ -31,36 +31,36 @@
 - **§2.7 Fixed:** `BeaconFormatters` created at `Domain/Formatting/BeaconFormatters.swift` using modern `.formatted` APIs. All five formatting call sites in `SummaryRow`, `ChartTooltipOverlay`, and `PayoffChartView` routed through it — no more `Decimal→Double` round-trips or inline formatter allocations.
 - **§2.8 Partial:** `DisclaimerFooter` updated from `beaconTextTertiary` to `beaconTextSecondary`. Dead `showRecalculateBar` property and stale comments removed from `BeaconRootView`.
 
-### Test updates ✅
-- `BeaconViewModelTests` updated to reflect the ViewModel refactor.
-- Two new tests added: `test_errorNotVisible_untilFieldTouched` and `test_calculate_exposesAllErrors`.
+### Stage 4 — Tests ✅ (commit `7c19f53`)
+- **Validator tests:** `BeaconTests/InputValidatorTests.swift` replaced with 55+ parametrized Swift Testing cases across 8 `@Suite` structs: `parseDecimal` edge cases (greedy parsing behaviour documented), balance/APR/months/payment boundary values, business-logic alert ordering (`insufficientPayment` fires before `termExceedsMax`), byMonths feasibility, and `buildInput` round-trips. All green.
+- **UI tests:** `BeaconUITests/BeaconUITests.swift` replaced with 3 real XCUIAutomation flows: happy-path byMonths calculation, insufficient-payment error recovery (alert appears → corrected payment → results appear), and stale-results notice (edit after calculation → stale notice → recalculate → notice clears).
+- **101/101 tests passing** across all three test suites.
+
+### Stage 4 — Accessibility ✅ (commit `22fce2a`)
+- **Chart audio graph:** `PayoffChartView` gains `AXChartDescriptorRepresentable` via private `PayoffChartDescriptor` struct. VoiceOver can navigate each month's remaining balance as an audio graph. Chart view also has an `.accessibilityLabel` summary string ("Balance over time chart. N months. Starting balance $X.").
+- **VoiceOver announcement:** `BeaconRootView` posts `AccessibilityNotification.Announcement` (via `.onChange(of: viewModel.plan?.payoffDate)`) whenever results are calculated or recalculated — reads months, total interest, and payoff date.
+- **Reduce Motion:** `@Environment(\.accessibilityReduceMotion)` in `BeaconRootView` gates both `BeaconMotion.appearance` fade-ins. When Reduce Motion is on, results and stale-notice appear instantly.
+- **Dynamic Type — table:** `AmortizationRowView` uses `@ScaledMetric private var scaledDateWidth: CGFloat = 76` at normal sizes. At `.accessibility1+`, the row switches to a stacked VStack: "Month N — Jan 2026" header + two HStacks of labeled amounts (Payment/Interest, Principal/Balance). `AmortizationTableView` hides the column header at accessibility sizes (rows are self-describing) and scales its own header date column with `@ScaledMetric`.
 
 ---
 
 ## What was NOT completed (next session)
 
 ### Stage 3 remainder
-- **§2.8 Stale-notice race:** The `hasStaleResults` boolean flag can flip `true` after a fresh calculation if the debounced sink fires late. The fix is to snapshot the inputs used for the current plan and compare rather than using a boolean. Left for next session.
+- **§2.8 Stale-notice race:** The `hasStaleResults` boolean flag can flip `true` after a fresh calculation if the debounced sink fires late. The fix is to snapshot the inputs used for the current plan and compare rather than using a boolean. Left for Stage 5 refactor.
 
-### Stage 4 — Tests and accessibility
-- **§4.4:** ~20 validator tests via Swift Testing `@Test(arguments:)` — `parseDecimal` edge cases, APR/months boundary values, `byPaymentTermAlert` projection. Estimated: ~1 session.
-- **§4.4:** Three real UI test flows (happy path, insufficient-payment recovery, recalculation) replacing the template stubs. Estimated: ~1 session.
-- **§4.4:** `.xctestplan` to synchronize CI and Xcode test runs.
-- **§5 (Accessibility):** Chart `accessibilityLabel` + `AXChartDescriptor`.
-- **§5 (Accessibility):** Dynamic Type: `@ScaledMetric` for `AmortizationTableMetrics.dateColumnWidth` + stacked row layout at `.accessibility1+`.
-- **§5 (Accessibility):** `AccessibilityNotification.Announcement` when results appear after calculation.
-- **§5 (Accessibility):** Reduce Motion handling for `BeaconMotion.appearance` transitions.
+### Stage 4 remainder
+- **§4.4:** `.xctestplan` to synchronize CI and Xcode test runs. Low priority — can be deferred to Stage 6 alongside the CI workflow.
 
 ### Stage 5 — Code quality
 - **§3.2:** Single-pass validation — have `validate()` return the built `RepaymentInput` alongside the result so `buildInput(from:)` doesn't re-run the full validation pass.
-- **§3.3:** Remaining dead code: `BeaconMotion.subtleChange` (acceptable, but flag it); `Field.textContentType` parameter has no call-site usage.
 - **§3.4:** `SWIFT_STRICT_CONCURRENCY = complete` → Swift 6 language mode.
-- **§3.4:** `@Observable` migration to replace the Combine pipeline.
+- **§3.4:** `@Observable` migration to replace the Combine pipeline in `BeaconViewModel`.
 - **§3.5:** String Catalog (`.xcstrings`) — if i18n is ever planned.
 - **§6:** Documentation reconciliation pass (PRD/tech-spec drift table in the review doc).
 
 ### Stage 6 — Launch prep
-- **Manual (human required):** App icon — `Assets.xcassets/AppIcon.appiconset` has empty slots for light, dark, and tinted 1024×1024 images.
+- **Manual (human required):** App icon — user has a 1024×1024 PNG (PNG is the correct format). Drop into the three `AppIcon.appiconset` slots in Assets.xcassets (light, dark, tinted). If only one image, use the same PNG for all three slots.
 - **Manual (human required):** AccentColor — `Assets.xcassets/AccentColor.colorset` is empty; set to sage: light `#5C8A6F` / dark `#7BA88C`.
 - **§4.2:** GitHub Actions CI workflow (build + test on push/PR).
 - **§4.3:** `swift-format` config + SwiftLint config; run once on whole tree.
@@ -74,10 +74,9 @@
 
 | Stage | Estimated sessions |
 |---|---|
-| Stage 4 (tests + accessibility) | 1–2 |
 | Stage 5 (code quality) | 1 |
 | Stage 6 (launch prep, excluding manual items) | 1 |
-| **Total** | **3–4 sessions** |
+| **Total** | **2 sessions** |
 
 ---
 
@@ -85,5 +84,5 @@
 
 Start by reading this document, then:
 1. Run the tests to confirm green: `xcodebuild test -scheme Beacon`
-2. Continue with **Stage 4** — validator tests are the highest-priority gap
+2. Continue with **Stage 5** — single-pass validation is the cleanest starting point, then strict concurrency, then `@Observable` migration
 3. The review document (`Docs/20260724 Next Steps.md`) remains the authoritative source for all remaining items with exact file/line references
