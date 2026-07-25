@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct MonthsField: View {
-    @ObservedObject var viewModel: BeaconViewModel
+    @Bindable var viewModel: BeaconViewModel
 
     var body: some View {
         Field(

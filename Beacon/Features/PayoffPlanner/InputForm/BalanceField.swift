@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct BalanceField: View {
-    @ObservedObject var viewModel: BeaconViewModel
+    @Bindable var viewModel: BeaconViewModel
 
     var body: some View {
         Field(

@@ -24,7 +24,7 @@ import Accessibility
 
 struct BeaconRootView: View {
 
-    @StateObject private var viewModel = BeaconViewModel()
+    @State private var viewModel = BeaconViewModel()
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {

@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct StartDatePicker: View {
-    @ObservedObject var viewModel: BeaconViewModel
+    @Bindable var viewModel: BeaconViewModel
 
     var body: some View {
         HStack(alignment: .top, spacing: BeaconSpacing.md) {

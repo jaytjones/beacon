@@ -2,7 +2,8 @@
 //  ValidationResult.swift
 //  Beacon
 //
-//  Synchronous validation output: errors, alert type, isValid.
+//  Synchronous validation output: errors, alert type, isValid, and the
+//  pre-built RepaymentInput so callers never need a second parsing pass.
 //
 
 import Foundation
@@ -31,14 +32,24 @@ struct FieldError: Identifiable, Equatable {
 
 /// The synchronous result of validating raw form input.
 ///
-/// `isValid` is true when there are no field errors AND no alert. The
-/// calculator should only ever be invoked with the fully-validated
-/// `RepaymentInput` derived from a passing `ValidationResult`.
-struct ValidationResult: Equatable {
+/// When `isValid == true`, `validatedInput` is non-nil and ready to pass
+/// directly to the calculator — no second parsing pass needed.
+struct ValidationResult {
     let isValid: Bool
     let fieldErrors: [FieldError]
     let alertType: AlertType?
+    /// Non-nil exactly when `isValid == true`.
+    let validatedInput: RepaymentInput?
 
-    /// Convenience: a clean pass with no errors and no alert.
-    static let valid = ValidationResult(isValid: true, fieldErrors: [], alertType: nil)
+    static let valid = ValidationResult(isValid: true, fieldErrors: [], alertType: nil, validatedInput: nil)
+}
+
+extension ValidationResult: Equatable {
+    // Equality is determined by the validation outcome alone; validatedInput
+    // is excluded so RepaymentInput doesn't need an Equatable conformance.
+    static func == (lhs: ValidationResult, rhs: ValidationResult) -> Bool {
+        lhs.isValid == rhs.isValid &&
+        lhs.fieldErrors == rhs.fieldErrors &&
+        lhs.alertType == rhs.alertType
+    }
 }

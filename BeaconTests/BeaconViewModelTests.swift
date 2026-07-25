@@ -5,6 +5,8 @@
 //  Tests for the BeaconViewModel — validation reactivity, state transitions,
 //  and calculate flow.
 //
+//  With @Observable + didSet, validation is synchronous. No Task.sleep needed.
+//
 
 import XCTest
 @testable import Beacon
@@ -42,14 +44,12 @@ final class BeaconViewModelTests: XCTestCase {
         XCTAssertNil(vm.plan)
     }
 
-    func test_calculate_withValidByMonthsInput_producesPlan() async {
+    func test_calculate_withValidByMonthsInput_producesPlan() {
         let vm = BeaconViewModel()
         vm.balanceText = "5000"
         vm.aprText = "24.99"
         vm.repaymentMode = .byMonths
         vm.monthsText = "24"
-
-        try? await Task.sleep(nanoseconds: 100_000_000)
 
         vm.calculate()
         XCTAssertNotNil(vm.plan)
@@ -63,35 +63,31 @@ final class BeaconViewModelTests: XCTestCase {
 
     // MARK: - Stale results tracking
 
-    func test_editingAfterCalculation_setsStaleResults() async {
+    func test_editingAfterCalculation_setsStaleResults() {
         let vm = BeaconViewModel()
         vm.balanceText = "5000"
         vm.aprText = "24.99"
         vm.repaymentMode = .byPayment
         vm.monthlyPaymentText = "300"
-        try? await Task.sleep(nanoseconds: 100_000_000)
         vm.calculate()
 
         XCTAssertFalse(vm.hasStaleResults, "Fresh calculation has no stale flag")
 
         vm.balanceText = "6000"
-        try? await Task.sleep(nanoseconds: 100_000_000)
 
         XCTAssertTrue(vm.hasStaleResults, "Editing after calculate should mark results stale")
         XCTAssertNotNil(vm.plan, "Previous plan should remain visible until recalc")
     }
 
-    func test_recalculating_clearsStaleFlag() async {
+    func test_recalculating_clearsStaleFlag() {
         let vm = BeaconViewModel()
         vm.balanceText = "5000"
         vm.aprText = "24.99"
         vm.repaymentMode = .byPayment
         vm.monthlyPaymentText = "300"
-        try? await Task.sleep(nanoseconds: 100_000_000)
         vm.calculate()
 
         vm.balanceText = "6000"
-        try? await Task.sleep(nanoseconds: 100_000_000)
         XCTAssertTrue(vm.hasStaleResults)
 
         vm.calculate()
@@ -125,14 +121,12 @@ final class BeaconViewModelTests: XCTestCase {
 
     // MARK: - Alerts
 
-    func test_insufficientPayment_setsAlert() async {
+    func test_insufficientPayment_setsAlert() {
         let vm = BeaconViewModel()
         vm.balanceText = "10000"
         vm.aprText = "24.99"
         vm.repaymentMode = .byPayment
         vm.monthlyPaymentText = "10"  // way below first-month interest
-
-        try? await Task.sleep(nanoseconds: 100_000_000)
 
         guard case .insufficientPayment(let minimum) = vm.alertType else {
             return XCTFail("Expected .insufficientPayment alert, got \(String(describing: vm.alertType))")
@@ -142,17 +136,15 @@ final class BeaconViewModelTests: XCTestCase {
         XCTAssertFalse(vm.canCalculate, "Calculate should be disabled while alert is active")
     }
 
-    func test_correctingInsufficientPayment_clearsAlert() async {
+    func test_correctingInsufficientPayment_clearsAlert() {
         let vm = BeaconViewModel()
         vm.balanceText = "10000"
         vm.aprText = "24.99"
         vm.repaymentMode = .byPayment
         vm.monthlyPaymentText = "10"
-        try? await Task.sleep(nanoseconds: 100_000_000)
         XCTAssertNotNil(vm.alertType)
 
         vm.monthlyPaymentText = "500"
-        try? await Task.sleep(nanoseconds: 100_000_000)
 
         XCTAssertNil(vm.alertType, "Correcting payment should clear alert")
         XCTAssertTrue(vm.canCalculate)
@@ -160,14 +152,12 @@ final class BeaconViewModelTests: XCTestCase {
 
     // MARK: - Field errors (touched-state gating)
 
-    func test_invalidAPR_producesFieldError() async {
+    func test_invalidAPR_producesFieldError() {
         let vm = BeaconViewModel()
         vm.balanceText = "5000"
         vm.aprText = "200"  // > 100
         vm.repaymentMode = .byMonths
         vm.monthsText = "24"
-
-        try? await Task.sleep(nanoseconds: 100_000_000)
 
         // Errors are gated until the field is touched or Calculate is pressed.
         XCTAssertFalse(vm.fieldErrors.isEmpty, "Validation should detect the out-of-range APR")
@@ -178,14 +168,12 @@ final class BeaconViewModelTests: XCTestCase {
         XCTAssertNotNil(vm.error(for: .apr))
     }
 
-    func test_zeroBalance_producesFieldError() async {
+    func test_zeroBalance_producesFieldError() {
         let vm = BeaconViewModel()
         vm.balanceText = "0"
         vm.aprText = "24.99"
         vm.repaymentMode = .byMonths
         vm.monthsText = "24"
-
-        try? await Task.sleep(nanoseconds: 100_000_000)
 
         XCTAssertFalse(vm.fieldErrors.isEmpty, "Zero balance should produce a field error")
         XCTAssertFalse(vm.canCalculate)
@@ -194,14 +182,12 @@ final class BeaconViewModelTests: XCTestCase {
         XCTAssertNotNil(vm.error(for: .balance))
     }
 
-    func test_zeroAPR_isAllowed() async {
+    func test_zeroAPR_isAllowed() {
         let vm = BeaconViewModel()
         vm.balanceText = "1200"
         vm.aprText = "0"
         vm.repaymentMode = .byMonths
         vm.monthsText = "12"
-
-        try? await Task.sleep(nanoseconds: 100_000_000)
 
         XCTAssertTrue(vm.fieldErrors.isEmpty, "0% APR is valid per PRD §7")
         XCTAssertTrue(vm.canCalculate)
@@ -213,14 +199,12 @@ final class BeaconViewModelTests: XCTestCase {
 
     // MARK: - Touched-state gating
 
-    func test_errorNotVisible_untilFieldTouched() async {
+    func test_errorNotVisible_untilFieldTouched() {
         let vm = BeaconViewModel()
         vm.balanceText = "5000"
         vm.aprText = "999"  // invalid
         vm.repaymentMode = .byMonths
         vm.monthsText = "24"
-
-        try? await Task.sleep(nanoseconds: 100_000_000)
 
         // Validation has run (fieldErrors populated) but UI hasn't gated through yet.
         XCTAssertFalse(vm.fieldErrors.isEmpty)
@@ -230,14 +214,12 @@ final class BeaconViewModelTests: XCTestCase {
         XCTAssertNotNil(vm.error(for: .apr), "Error should show after field is touched")
     }
 
-    func test_calculate_exposesAllErrors() async {
+    func test_calculate_exposesAllErrors() {
         let vm = BeaconViewModel()
         vm.balanceText = "5000"
         vm.aprText = "999"  // invalid
         vm.repaymentMode = .byMonths
         vm.monthsText = "24"
-
-        try? await Task.sleep(nanoseconds: 100_000_000)
 
         XCTAssertNil(vm.error(for: .apr), "Hidden before calculate")
         vm.calculate()

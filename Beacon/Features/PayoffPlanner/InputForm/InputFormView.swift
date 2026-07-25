@@ -15,7 +15,7 @@ import SwiftUI
 import UIKit
 
 struct InputFormView: View {
-    @ObservedObject var viewModel: BeaconViewModel
+    var viewModel: BeaconViewModel
 
     var body: some View {
         VStack(alignment: .leading, spacing: BeaconSpacing.xl) {

@@ -152,35 +152,36 @@ struct InputValidator {
         }
 
         let isValid = errors.isEmpty && alert == nil
-        return ValidationResult(isValid: isValid, fieldErrors: errors, alertType: alert)
+
+        var validatedInput: RepaymentInput? = nil
+        if isValid, let balance = parsedBalance, let apr = parsedAPR {
+            switch raw.mode {
+            case .byMonths:
+                if let months = parsedMonths {
+                    validatedInput = RepaymentInput(
+                        balance: balance, apr: apr, mode: .byMonths,
+                        months: months, monthlyPayment: nil,
+                        startMonth: raw.startMonth, startYear: raw.startYear
+                    )
+                }
+            case .byPayment:
+                if let payment = parsedPayment {
+                    validatedInput = RepaymentInput(
+                        balance: balance, apr: apr, mode: .byPayment,
+                        months: nil, monthlyPayment: payment,
+                        startMonth: raw.startMonth, startYear: raw.startYear
+                    )
+                }
+            }
+        }
+
+        return ValidationResult(isValid: isValid, fieldErrors: errors, alertType: alert,
+                                validatedInput: validatedInput)
     }
 
-    /// Build a `RepaymentInput` from raw inputs that have already been
-    /// validated. Returns nil if validation would fail — callers should
-    /// always validate first.
+    /// Build a `RepaymentInput` from raw inputs. Returns nil if validation fails.
     static func buildInput(from raw: RawInputs) -> RepaymentInput? {
-        guard validate(raw).isValid,
-              let balance = parseDecimal(raw.balance),
-              let apr = parseDecimal(raw.apr) else {
-            return nil
-        }
-
-        switch raw.mode {
-        case .byMonths:
-            guard let months = parseInt(raw.months) else { return nil }
-            return RepaymentInput(
-                balance: balance, apr: apr, mode: .byMonths,
-                months: months, monthlyPayment: nil,
-                startMonth: raw.startMonth, startYear: raw.startYear
-            )
-        case .byPayment:
-            guard let payment = parseDecimal(raw.monthlyPayment) else { return nil }
-            return RepaymentInput(
-                balance: balance, apr: apr, mode: .byPayment,
-                months: nil, monthlyPayment: payment,
-                startMonth: raw.startMonth, startYear: raw.startYear
-            )
-        }
+        validate(raw).validatedInput
     }
 
     // MARK: - Helpers

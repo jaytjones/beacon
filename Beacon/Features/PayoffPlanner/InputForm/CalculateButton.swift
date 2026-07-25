@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct CalculateButton: View {
-    @ObservedObject var viewModel: BeaconViewModel
+    var viewModel: BeaconViewModel
 
     var body: some View {
         PrimaryButton(

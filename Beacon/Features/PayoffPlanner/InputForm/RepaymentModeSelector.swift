@@ -12,7 +12,7 @@
 import SwiftUI
 
 struct RepaymentModeSelector: View {
-    @ObservedObject var viewModel: BeaconViewModel
+    var viewModel: BeaconViewModel
 
     var body: some View {
         Picker("Repayment mode", selection: modeBinding) {
