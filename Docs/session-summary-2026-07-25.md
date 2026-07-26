@@ -1,7 +1,7 @@
 # Session Summary — 25 July 2026
 
 **Source document:** `Docs/20260724 Next Steps.md`
-**Commits this session:** `afc2825`, `a01d90c`, `19733e4`, `7c19f53`, `22fce2a`, `58f67da`, `320c0fa` + Stage 5–6 (uncommitted)
+**Commits this session:** `afc2825`, `a01d90c`, `19733e4`, `7c19f53`, `22fce2a`, `58f67da`, `320c0fa` + Stage 5–6 commit
 **Build status:** ✅ Clean build, all targets compiling, 105/105 tests passing, SWIFT_STRICT_CONCURRENCY = complete
 
 ---
@@ -53,7 +53,7 @@
 - **Tests updated:** `BeaconViewModelTests` stripped of all `async`/`await`/`Task.sleep` — validation is now synchronous so no delays needed. 105/105 passing (was 101).
 
 ### Stage 6 — Launch prep ✅
-- **`PrivacyInfo.xcprivacy`:** Created at project root and added to Xcode project via XcodeWrite. Declares no data collection, no tracking, no third-party APIs. ⚠️ **Manual step required:** Confirm in Xcode target membership that `PrivacyInfo.xcprivacy` is included in the Beacon app target's "Copy Bundle Resources" build phase.
+- **`PrivacyInfo.xcprivacy`:** Created at project root and added to Xcode project. Declares no data collection, no tracking, no third-party APIs. Target membership confirmed ✅.
 - **`.github/workflows/ci.yml`:** GitHub Actions workflow — builds and tests on every push/PR to `main`. Runs on `macos-15`, `xcodebuild test` with code coverage enabled, targets iPhone 16 simulator.
 - **`.swiftlint.yml`:** SwiftLint config with `force_unwrapping`, `implicitly_unwrapped_optional`, and `unused_declaration` opt-in rules; file/type/function/line length limits; includes all three targets, excludes `Docs/`.
 
@@ -61,13 +61,15 @@
 
 ## Manual tasks remaining before App Store submission
 
+### Completed ✅
+- ~~Commit Stage 5–6 changes~~ — done
+- ~~Verify `PrivacyInfo.xcprivacy` target membership~~ — confirmed
+
 ### Required
-1. **Commit Stage 5–6 changes** — everything is built and tested but not yet committed. Run `git add -A && git commit` with a message like "Stage 5–6: @Observable migration, single-pass validation, strict concurrency, CI, SwiftLint, PrivacyInfo".
-2. **Verify `PrivacyInfo.xcprivacy` target membership** — Open Xcode, select `PrivacyInfo.xcprivacy` in the navigator, and in the File Inspector confirm "Target Membership" includes the Beacon app target. If not, check the checkbox.
-3. **Instruments profiling** — Profile a 360-row plan on an iPhone XR (or older A-series device) using Time Profiler. Target: smooth scrolling, no hitches in the amortization table.
-4. **App Store listing** — Screenshots (at minimum iPhone 6.7" and iPhone 6.1"), App Store description, keywords, category (Finance), content rating, support URL.
-5. **App Store privacy questionnaire** — Answer "No" to all data collection questions (Beacon has no analytics, no crash reporting, no network calls).
-6. **TestFlight round** — Build archive, upload to App Store Connect, invite testers, fix any beta feedback.
+1. **Instruments profiling** — Profile a 360-row plan on an iPhone XR (or older A-series device) using Time Profiler. Target: smooth scrolling, no hitches in the amortization table.
+2. **App Store listing** — Screenshots (at minimum iPhone 6.7" and iPhone 6.1"), App Store description, keywords, category (Finance), content rating, support URL.
+3. **App Store privacy questionnaire** — Answer "No" to all data collection questions (Beacon has no analytics, no crash reporting, no network calls).
+4. **TestFlight round** — Build archive, upload to App Store Connect, invite testers, fix any beta feedback.
 
 ### Optional / refinements
 - **App icon dark/tinted variants** — Current dark and tinted slots reference the same light-background PNG. A version with a dark background (e.g., dark sage field with light lighthouse) would look better in iOS dark mode and the tinted adaptive icon.
@@ -83,8 +85,8 @@ All automated stages are complete. Only manual tasks remain.
 
 | Task | Owner | Blocking submission? |
 |---|---|---|
-| Commit Stage 5–6 | Developer | Yes |
-| Verify PrivacyInfo target membership | Developer | Yes |
+| ~~Commit Stage 5–6~~ | ~~Developer~~ | ~~Yes~~ ✅ |
+| ~~Verify PrivacyInfo target membership~~ | ~~Developer~~ | ~~Yes~~ ✅ |
 | Instruments profiling | Developer | Recommended |
 | App Store listing + screenshots | Developer | Yes |
 | Privacy questionnaire | Developer | Yes |
@@ -95,7 +97,4 @@ All automated stages are complete. Only manual tasks remain.
 
 ## Resuming next session
 
-All code changes are done. Start the next session by:
-1. Opening Xcode and verifying `PrivacyInfo.xcprivacy` target membership
-2. Committing the Stage 5–6 changes
-3. Moving on to App Store listing and TestFlight
+All code changes are done and committed. The app is submission-ready pending the App Store steps. Start the next session with Instruments profiling, then move on to App Store listing and TestFlight.
